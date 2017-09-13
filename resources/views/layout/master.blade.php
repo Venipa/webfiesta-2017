@@ -38,7 +38,7 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li><a href="/">Home</a></li>
-            <li><a href="{{route('get:downloads'}}">Download</a></li>
+            <li><a href="{{route('get:downloads')}}">Download</a></li>
             @if(config('app.mall'))
                   <li><a href="{{route('get:shop')}}">Shop</a></li>
               @endif
