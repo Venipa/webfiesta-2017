@@ -9,5 +9,8 @@ return [
     ],
     'selly' => [
         'productID' => '891cb780'
+    ],
+    'downloads' => [
+        'MEGA.NZ' => 'https://mega.nz/---'
     ]
 ];
