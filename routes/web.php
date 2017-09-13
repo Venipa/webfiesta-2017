@@ -44,6 +44,9 @@ Route::group(['middleware' => ['web', 'auth']], function() {
         Route::post('shop/buy-{id}', 'Shop\ShopController@buy_post')->name('post:shop:buy');
         Route::post('api/cardredeem', 'Shop\ShopController@redeemCard')->name('post:giftcode');
         Route::get('rate', 'Shop\ShopController@rate')->name('get:shop:rate');
+        Route::get('downloads', function() {
+            return view('user.downloads');
+        })->name('get:downloads');
     }
 });
 if(config('app.mall')) {
