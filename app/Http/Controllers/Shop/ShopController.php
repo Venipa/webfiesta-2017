@@ -9,6 +9,10 @@ use App\ShopCats;
 use App\Rate;
 use App\GC;
 use Validator;
+use App\User;
+use App\Purchases;
+use App\ItemUse;
+use Carbon\Carbon;
 
 class ShopController extends Controller
 {
@@ -27,9 +31,39 @@ class ShopController extends Controller
     }
     public function buy_post(Request $r) {
         $this->validate($r, [
-            'itemid' => 'required|exists:mssql_mall.tItems,nID'
+            'itemid' => 'required'
         ]);
+        $item = Shop::where('nID', $r->input('itemid'))->first();
 
+        if(count($item) > 0) {
+            $user = \Auth::user();
+            $user->nCoins -= $item->nPrice;
+            if($user->nCoins >= 0) {
+
+                //Ordering
+                $order = Purchases::create([
+                    'nAGID' => 1,
+                    'nPrice' => $item->nPrice,
+                    'nGoodsNo' => $item->nGoodsNo,
+                    'nQuantity' => $item->nLot,
+                    'sIP' => $r->ip(),
+                    'nIsGift' => 0,
+                    'userNo' => $user->nEMID
+                ]);
+                //Putting Item into User's Inventory
+                $itemUse = ItemUse::create([
+                    'nOrderID' => $order->nID,
+                    'nAGID' => 1,
+                    'nCharNo' => 0,
+                ]);
+                $user->save();
+                return redirect()->back()->with(['message' => 'Item Bought!', 'error' => false]);
+            } else {
+                return redirect()->back()->with(['message' => 'Not enough Coins!', 'error' => true]);
+            }
+        } else {
+            return redirect()->back()->with(['message' => 'Item not Found!', 'error' => true]);
+        }
     }
     public function generateCode(Request $r, $uniq = null) {
         \Log::debug("New Request on GenCode Page from {$r->ip()}");
@@ -48,7 +82,7 @@ class ShopController extends Controller
                 'gateway' => $r->input('gateway'),
                 'ip' => $r->input('ip_address')
             ]);
-            return response("Your GiftCard Code: \"{$newcode}\", you can redeem it under your Profile.\nRegards,\nYour Pephix Team");
+            return response("Your GiftCard Code: \"{$newcode}\", you can redeem it under your Profile.\nRegards,\nYour ".config('app.name', 'Fiesta')." Team");
         } else {
             return abort(404);
         }

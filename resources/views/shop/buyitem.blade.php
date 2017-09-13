@@ -9,6 +9,7 @@
                             <div class="text-center top-half"><img src="/img/Items/{{$item->sImg}}" alt="" class="img-responsive img-thumbnail text-center"></div>
                         </div>
                         <div class="panel-body">
+                            @include('data.message')
                             <div class="alert alert-warning"><i class="mdi mdi-alert-circle"></i> Do you really want to buy this Item?</div>
                             <div class="table-responsive">
                                 <table class="table table-simple table-bordered table-first-grey">

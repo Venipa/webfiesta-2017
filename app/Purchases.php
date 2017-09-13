@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Purchases extends Model
 {
-    protected $primaryKey = 'nID';
+    protected $primaryKey = "nID";
     protected $table = 'tPurchases';
     protected $guarded = ['nID'];
 
@@ -14,7 +14,7 @@ class Purchases extends Model
     const UPDATED_AT = null;
 
     public function items() {
-        return $this->hasOne(Items::class, "nOrderID");
+        return $this->hasOne(ItemUse::class, "nOrderID");
     }
 
 }

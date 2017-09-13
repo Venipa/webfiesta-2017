@@ -15,7 +15,7 @@
             </tr>
             <tr>
                 <td><strong>Get Coins</strong></td>
-                <td><button class="btn btn-link btn-sm" data-selly-product="2caeb613">Here</button></td>
+                <td><button class="btn btn-link btn-sm" data-selly-product="{{config('fiesta.selly.productID', null)}}">Here</button></td>
             </tr>
             </tbody>
         </table>

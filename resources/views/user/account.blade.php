@@ -6,19 +6,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">Account</div>
             <div class="panel-body">
-                @if (session()->has('message'))
-            <div class="row">
-                <div class="col-md-12">
-                    @if (session()->has('error') && session()->get('error'))
-                        <div class="alert alert-danger fade in">
-                        @else
-                                <div class="alert alert-success fade in">
-                        @endif
-                        <i class="mdi mdi-check"></i> {{ session()->get('message') }}
-                    </div>
-                </div>
-            </div>
-                @endif
+                @include('data.message')
                 <div class="row row-divide">
                     <div class="col-xs-4 col-sm-2" data-toggle="tooltip" title="You can change your Avatar via Gravatar">
                         <img src="{{Gravatar::fallback('/img/defaultprofile.png')->get(\Auth::user()->email, ['size' => 210])}}" alt="" class="img-responsive img-rounded">

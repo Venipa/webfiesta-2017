@@ -39,8 +39,8 @@ class AuthController extends Controller
     public function register_post(Request $r) {
         $v = Validator::make($r->all(), [
             'g-recaptcha-response' => 'required|recaptcha',
-            'username' => 'required|unique:tAccounts,username',
-            'email' => 'required|email|unique:tAccounts,email',
+            'username' => 'required|max:10|unique:tAccounts,username',
+            'email' => 'required|max:200|email|unique:tAccounts,email',
             'password' => 'required|confirmed|min:6|max:16'
         ]);
         if ($v->fails()) {
@@ -55,9 +55,9 @@ class AuthController extends Controller
             'password' => Hash::make($r->input('password')),
             'sIP' => $r->ip()]);
         if(count($user) > 0)
-            return view('login');
+            return redirect()->route("login");
         else
-            return view('register');
+            return redirect()->route("register");
     }
     public function resetpassword() {
         return view('auth.password_reset');
