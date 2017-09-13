@@ -1,0 +1,24 @@
+<div class="row row-divide">
+                <div class="col-xs-2">
+                    <h4>Notifications</h4>
+                    <p class="text-muted">Get notifications about updates and such stuff</p>
+                </div>
+                <div class="col-xs-10">
+                    <form method="post" action="{{route('post:notify:settings')}}">
+                        {{csrf_field()}}
+                        <div class="form-group {{ $errors->has('notify') ? 'has-error' : '' }}">
+                            <select name="notify" class="form-control">
+                                <option value="0">Do not notify me</option>
+                                <option value="1">Only notify about critical Updates/Notifications</option>
+                                <option value="2">Notify about all Updates/Notifications</option>
+                            </select>
+                            @if ($errors->has('code'))
+                                <span class="help-block">
+                                        <strong>{{ $errors->first('code') }}</strong>
+                                    </span>
+                            @endif
+                        </div>
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </form>
+                </div>
+            </div>

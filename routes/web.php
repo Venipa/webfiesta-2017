@@ -24,6 +24,8 @@ Route::group(['middleware' => ['guest']], function() {
     Route::get('password/reset', 'Authentication\ForgotPasswordController@showLinkRequestForm')->name('password.request');
     Route::post('password/reset', 'Authentication\ResetPasswordController@reset');
     Route::get('password/reset/{token}', 'Authentication\ResetPasswordController@showResetForm')->name('password.reset');
+
+
 });
 
 Route::group(['middleware' => ['web', 'auth']], function() {
@@ -40,6 +42,10 @@ Route::group(['middleware' => ['web', 'auth']], function() {
         Route::get('shop/cat-{cat}', 'Shop\ShopController@index_wCat')->name('get:shop:cat');
         Route::get('shop/buy-{id}', 'Shop\ShopController@buy')->name('get:shop:buy');
         Route::post('shop/buy-{id}', 'Shop\ShopController@buy_post')->name('post:shop:buy');
-        Route::post('/api/cardredeem', 'User\AccountController@redeemCard')->name('post:giftcode');
+        Route::post('api/cardredeem', 'Shop\ShopController@redeemCard')->name('post:giftcode');
+        Route::get('rate', 'Shop\ShopController@rate')->name('get:shop:rate');
     }
 });
+if(config('app.mall')) {
+    Route::any('getcard/{uniq?}', 'Shop\ShopController@generateCode')->name('get:shop:code');
+}

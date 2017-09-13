@@ -13,6 +13,10 @@
                 <td><strong>Coins</strong></td>
                 <td>{{Auth::user()->nCoins}}</td>
             </tr>
+            <tr>
+                <td><strong>Get Coins</strong></td>
+                <td><button class="btn btn-link btn-sm" data-selly-product="2caeb613">Here</button></td>
+            </tr>
             </tbody>
         </table>
     </div>

@@ -47,7 +47,6 @@
                                     </span>
                                 @endif
                         </div>
-                        @if(config("app.env") != "local")
                         <div class="form-group {{ $errors->has('g-recaptcha-response') ? 'has-error' : '' }}">
                         {!! Recaptcha::render() !!}
                                 @if ($errors->has('g-recaptcha-response'))
@@ -56,7 +55,6 @@
                                     </span>
                                 @endif
                         </div>
-                        @endif
                     </div>
 
                     <div class="card-action">

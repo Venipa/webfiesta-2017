@@ -24,3 +24,6 @@
         </div>
     </div>
 @endsection
+@section('js')
+    <script src="/js/selly.js"></script>
+    @endsection

@@ -47,7 +47,4 @@ class AccountController extends Controller
                 ->withInput();
         }
     }
-    public function redeemCard(Request $r) {
-        
-    }
 }

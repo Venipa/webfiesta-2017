@@ -396,7 +396,6 @@ table.table.table-first-grey>tbody>tr>td:first-of-type {
 .list-group-item.active {
     background-color: #ededed;
 }
-
 .page-loading-wrapper {
     position: fixed;
     top: 0;

@@ -15,8 +15,8 @@ class AuthController extends Controller
         return view('auth.login');
     }
     public function login_post(Request $r) {
-        $v = Validator::make($r->only(['email', 'password', 'g-recaptcha-response']), [
-            'g-recaptcha-response' => config('app.env') == "local" ? 'sometimes|required|recaptcha' : 'required|recaptcha',
+        $v = Validator::make($r->all(), [
+            'g-recaptcha-response' => 'required|recaptcha',
             'email' => 'required|email|exists:tAccounts,email',
             'password' => 'required'
         ]);
@@ -38,7 +38,7 @@ class AuthController extends Controller
     }
     public function register_post(Request $r) {
         $v = Validator::make($r->all(), [
-            'g-recaptcha-response' => config('app.env') == "local" ? 'sometimes|required||recaptcha' : 'required|recaptcha',
+            'g-recaptcha-response' => 'required|recaptcha',
             'username' => 'required|unique:tAccounts,username',
             'email' => 'required|email|unique:tAccounts,email',
             'password' => 'required|confirmed|min:6|max:16'

@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Shop;
 use App\ShopCats;
+use App\Rate;
+use App\GC;
+use Validator;
 
 class ShopController extends Controller
 {
@@ -28,38 +31,42 @@ class ShopController extends Controller
         ]);
 
     }
-    private $allowed_uniq = ["Vji9vcA2AGdPxFXSKCYL", "LwRDDuKUlpqyVn17SYBZ", "fvHt9ewNu4UcKvZN7pa0"];
-    public function generateCode($uniq, Request $r) {
-        if($uniq == null && ($uniq != null && !in_array($uniq, $allowed_uniq))) {
-            abort(404);
+    public function generateCode(Request $r, $uniq = null) {
+        \Log::debug("New Request on GenCode Page from {$r->ip()}");
+        if($uniq == null || ($uniq != null && !in_array($uniq, config('fiesta.shop.uniqKey')))) {
+            abort(404, "$uniq is not a valid Secret!");
         }
-        if($r->has('webhook_type') && $r->input('webhook_type') == "3" && $r->has('id') && $r->has('email') && $r->has('value')) {
-            $gc = GiftCard::create([
-                'giftcard' => strtoupper(str_random(20)),
+        //\Log::debug("UNIQ($uniq) :: ".json_encode($r->all()));
+        if($r->has(['webhook_type', 'email', 'id', 'value', 'gateway', 'ip_address']) && $r->input('webhook_type') == "3") {
+            $newcode = strtoupper(str_random(5)."-".str_random(5)."-".str_random(5)."-".str_random(5));
+            $gc = GC::create([
+                'giftcard' => str_replace("-", "", $newcode),
                 'sellyID' => $r->input('id'),
                 'email' => $r->input('email'),
                 'price' => ceil(floatval($r->input('value'))),
-                'enabled' => 1
+                'enabled' => 1,
+                'gateway' => $r->input('gateway'),
+                'ip' => $r->input('ip_address')
             ]);
-            return response("Your GiftCard Code: \"{$gc->giftcard}\", you can redeem it under your Profile.\nRegards,\nYour Pephix Team");
+            return response("Your GiftCard Code: \"{$newcode}\", you can redeem it under your Profile.\nRegards,\nYour Pephix Team");
         } else {
-            abort(404);
+            return abort(404);
         }
     }
     public function rate() {
-        $rates = Web::table('dbo.rate', false)->get();
-        $base = intval(Web::getSetting("mall:currency:base", false));
+        $rates = Rate::get();
+        $base = intval(config('fiesta.currency.base', 100));
         $base = $base <= 50 ? 100 : $base;
         return view('shop.rates')->with(['rates' => $rates, 'base' => $base]);
     }
 
-    public function redeemCode(Request $r) {
+    public function redeemCard(Request $r) {
         $validator=Validator::make($r->all(), [
-            'code' => 'required|min:20|max:20'
+            'code' => 'required|min:23|max:23'
         ]);
 
         if($r->has('code')) {
-            $code = GiftCard::where('giftcard', trim(strtoupper($r->input('code'))))->first();
+            $code = GC::where('giftcard', trim(strtoupper(str_replace('-', '', $r->input('code')))))->first();
         }
         if(!$validator->fails() && count($code) > 0) {
             $user = \Auth::user();
@@ -69,17 +76,17 @@ class ShopController extends Controller
                 $code->usedby = $user->nEMID;
                 $user->save();
                 $code->save();
-                return response()->json(['message' => "{$coins} Coins has been added successfully to your Account."],200);
+                return redirect()->back()->with(['message' => "{$coins} Coins has been added successfully to your Account.", 'error' => false]);
             } else {
-                return response()->json(['message' => 'Something wrong happened, contact the Support!'],406);
+                return redirect()->back()->with(['message' => 'Something wrong happened, contact the Support!', 'error' => true]);
             }
         } else {
-            return response()->json(['message' => 'Make sure your Code\'s length is 20. Otherwise this Code has already been used or could not be found.'],406);
+            return redirect()->back()->with(['message' => 'Make sure your Code\'s length is 20. Otherwise this Code has already been used or could not be found.', 'error' => true]);
         }
     }
     private function getCoins($code) {
-        $rate = Web::table('dbo.rate', false)->orderBy('amount', 'desc')->where('amount', '<=', $code->price)->first();
-        $base = intval(Web::getSetting("mall:currency:base", false));
+        $rate = Rate::orderBy('amount', 'desc')->where('amount', '<=', $code->price)->first();
+        $base = intval(config('fiesta.currency.base', 100));
         $base = $base <= 50 ? 100 : $base;
         return (($base*$rate->amount)*((100-$rate->bonusPercentage) / 100));
     }

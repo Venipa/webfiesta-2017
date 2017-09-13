@@ -9,14 +9,18 @@
                 @if (session()->has('message'))
             <div class="row">
                 <div class="col-md-12">
-                    <div class="alert alert-success fade in">
+                    @if (session()->has('error') && session()->get('error'))
+                        <div class="alert alert-danger fade in">
+                        @else
+                                <div class="alert alert-success fade in">
+                        @endif
                         <i class="mdi mdi-check"></i> {{ session()->get('message') }}
                     </div>
                 </div>
             </div>
                 @endif
                 <div class="row row-divide">
-                    <div class="col-xs-4 col-sm-2">
+                    <div class="col-xs-4 col-sm-2" data-toggle="tooltip" title="You can change your Avatar via Gravatar">
                         <img src="{{Gravatar::fallback('/img/defaultprofile.png')->get(\Auth::user()->email, ['size' => 210])}}" alt="" class="img-responsive img-rounded">
                     </div>
                     <div class="col-xs-8 col-sm-10">
@@ -89,33 +93,21 @@
                             </div>
                         </div>
             @endif
-            <div class="row row-divide">
-                <div class="col-xs-2">
-                    <h4>Notifications</h4>
-                    <p class="text-muted">Get notifications about updates and such stuff</p>
-                </div>
-                <div class="col-xs-10">
-                    <form method="post" action="{{route('post:giftcode')}}">
-                        {{csrf_field()}}
-                        <div class="form-group {{ $errors->has('notify') ? 'has-error' : '' }}">
-                            <select name="notify" class="form-control">
-                                <option value="0">Do not notify me</option>
-                                <option value="1">Only notify about critical Updates/Notifications</option>
-                                <option value="2">Notify about all Updates/Notifications</option>
-                            </select>
-                            @if ($errors->has('code'))
-                                <span class="help-block">
-                                        <strong>{{ $errors->first('code') }}</strong>
-                                    </span>
-                            @endif
-                        </div>
-                        <button type="submit" class="btn btn-success">Save</button>
-                    </form>
-                </div>
-            </div>
+
             </div>
         </div>
         </div>
     </div>
 </div>
+@endsection
+
+@section('js')
+        <script src="/js/cleave.min.js"></script>
+        <script>
+            var cleave = new Cleave('#code', {
+                blocks: [5,5,5,5],
+                delimiter: '-',
+                numericOnly: false
+            });
+        </script>
 @endsection
