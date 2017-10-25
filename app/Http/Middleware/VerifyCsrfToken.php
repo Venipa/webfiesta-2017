@@ -12,6 +12,6 @@ class VerifyCsrfToken extends BaseVerifier
      * @var array
      */
     protected $except = [
-        "get:shop:code", "getcard", "getcard/*"
+        "get:shop:code", "getcard", "getcard/*", "post:coins", "shop/post-coins"
     ];
 }

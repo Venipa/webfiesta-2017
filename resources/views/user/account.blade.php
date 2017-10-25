@@ -58,29 +58,6 @@
                 </form>
                 </div>
             </div>
-            @if(config('app.mall'))
-                        <div class="row row-divide">
-                            <div class="col-xs-2">
-                                <h4>Redeem Card</h4>
-                                <p class="text-muted">Requirements: an valid Giftcard from our Website</p>
-                            </div>
-                            <div class="col-xs-10">
-                                <form method="post" action="{{route('post:giftcode')}}">
-                                    {{csrf_field()}}
-                                    <div class="form-group {{ $errors->has('code') ? 'has-error' : '' }}">
-                                        <label for="code">Code</label>
-                                        <input type="text" class="form-control" id="code" name="code" placeholder="20 alphanumeric characters">
-                                        @if ($errors->has('code'))
-                                            <span class="help-block">
-                                        <strong>{{ $errors->first('code') }}</strong>
-                                    </span>
-                                        @endif
-                                    </div>
-                                    <button type="submit" class="btn btn-success">Redeem</button>
-                                </form>
-                            </div>
-                        </div>
-            @endif
 
             </div>
         </div>

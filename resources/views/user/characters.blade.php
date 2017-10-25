@@ -11,7 +11,7 @@
                     <div class="panel panel-default panel-hover">
                         <div class="panel-body">
                             <p class="lead">{{$char->sID}}<div class="class-icon class-icon-{{$char->shape()->first()->nClass}} pull-right"></div></p>
-                            <small>Lv.{{$char->nLevel}}, {{printf("%d000.00.000.000", $char->nExp)}} EXP</small>
+                            <small>Lv.{{$char->nLevel}}, {{$char->nExp}} EXP</small>
                         </div>
                     </div>
             @endforeach

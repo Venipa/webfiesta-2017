@@ -15,7 +15,7 @@
             </tr>
             <tr>
                 <td><strong>Get Coins</strong></td>
-                <td><button class="btn btn-link btn-sm" data-selly-product="{{config('fiesta.selly.productID', null)}}">Here</button></td>
+                <td><button class="btn btn-link btn-sm" data-href="{{route('get:coins')}}">Here</button></td>
             </tr>
             </tbody>
         </table>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Shop;
 
+use Composer\DependencyResolver\Transaction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Shop;
@@ -13,6 +14,8 @@ use App\User;
 use App\Purchases;
 use App\ItemUse;
 use Carbon\Carbon;
+use App\Transactions;
+use CF;
 
 class ShopController extends Controller
 {
@@ -42,7 +45,7 @@ class ShopController extends Controller
 
                 //Ordering
                 $order = Purchases::create([
-                    'nAGID' => 1,
+                    'nAGID' => $user->nEMID,
                     'nPrice' => $item->nPrice,
                     'nGoodsNo' => $item->nGoodsNo,
                     'nQuantity' => $item->nLot,
@@ -118,10 +121,50 @@ class ShopController extends Controller
             return redirect()->back()->with(['message' => 'Make sure your Code\'s length is 20. Otherwise this Code has already been used or could not be found.', 'error' => true]);
         }
     }
+    public function getCoinPage() {
+        return view('shop.buycoins');
+    }
+    public function postCoins(Request $r) {
+        if($r->has(['id', 'uid', 'oid', 'new', 'sig'])) {
+            $data = [
+                'transaction_id' => $r->input('id'),
+                'user_id' => $r->input('uid'),
+                'offer_id' => $r->input('oid'),
+                'new_currency' => $r->input('new'),
+                'hash_signature' => $r->input('sig'),
+                'ip' => CF::ip()
+            ];
+            $hash = md5($data["transaction_id"].":".$data["new_currency"].":".$data["user_id"].":".config('fiesta.srr.secret'));
+            if($hash == $data['hash_signature']) {
+                $user = User::find($data["user_id"]);
+                if(count($user) > 0) {
+                    $coins = $this->calculateExtra($data["new_currency"]);
+                    $user->nCoins += $coins;
+                    if($user->nCoins >= 0) {
+                        $trans = Transactions::where('transaction_id', $data["transaction_id"])->first();
+                        if(count($trans) > 0) {
+                            return response(0);
+                        }
+                        $trans = Transaction::create($data);
+                        $user->save();
+                    }
+                    return response(1);
+                }
+
+            }
+        }
+        return response(0);
+    }
+
     private function getCoins($code) {
         $rate = Rate::orderBy('amount', 'desc')->where('amount', '<=', $code->price)->first();
         $base = intval(config('fiesta.currency.base', 100));
         $base = $base <= 50 ? 100 : $base;
-        return (($base*$rate->amount)*((100-$rate->bonusPercentage) / 100));
+        return (($base*$rate->amount)*((100+$rate->bonusPercentage) / 100));
+    }
+    private function calculateExtra($points) {
+        $rate = Rate::orderBy('amount', 'desc')->where('amount', '<=', $points/100)->first();
+        $base = intval(config('fiesta.currency.base', 100));
+        return (($base*$rate->amount)*((100+$rate->bonusPercentage) / 100));
     }
 }

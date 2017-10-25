@@ -38,6 +38,7 @@ Route::group(['middleware' => ['web', 'auth']], function() {
 
     //Shop
     if(config('app.mall')) {
+        Route::get('shop/get-coins', 'Shop\ShopController@getCoinPage')->name('get:coins');
         Route::get('shop', 'Shop\ShopController@index')->name('get:shop');
         Route::get('shop/cat-{cat}', 'Shop\ShopController@index_wCat')->name('get:shop:cat');
         Route::get('shop/buy-{id}', 'Shop\ShopController@buy')->name('get:shop:buy');
@@ -51,4 +52,9 @@ Route::group(['middleware' => ['web', 'auth']], function() {
 });
 if(config('app.mall')) {
     Route::any('getcard/{uniq?}', 'Shop\ShopController@generateCode')->name('get:shop:code');
+    Route::post('shop/post-coins', 'Shop\ShopController@postCoins')->name('post:coins');
 }
+Route::get('top', 'User\CharacterController@topEXP')->name('get:top:exp');
+Route::get('faq', function() {
+    return view('faq.index');
+})->name('get:faq');
